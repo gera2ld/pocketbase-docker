@@ -1,17 +1,17 @@
-FROM alpine AS downloader
+FROM golang:1.23 AS builder
 
 ARG TARGETOS
 ARG TARGETARCH
-ARG POCKETBASE_VERSION=0.22.23
 
-ADD https://github.com/pocketbase/pocketbase/releases/download/v${POCKETBASE_VERSION}/pocketbase_${POCKETBASE_VERSION}_${TARGETOS}_${TARGETARCH}.zip /tmp/pocketbase.zip
-RUN unzip /tmp/pocketbase.zip -d /tmp \
-  && mv /tmp/pocketbase /usr/bin/pocketbase
+WORKDIR /app
+ADD . /app
+
+RUN git apply drop-accept-encoding.patch && cd pocketbase/examples/base && CGO_ENABLED=0 go build -ldflags "-s -w" -trimpath
 
 FROM alpine
 WORKDIR /app
 
-COPY --from=downloader /usr/bin/pocketbase /usr/bin/pocketbase
+COPY --from=builder /app/pocketbase/examples/base/base /usr/bin/pocketbase
 VOLUME /app
 
 CMD ["pocketbase", "serve", "--http", "0.0.0.0:8090"]

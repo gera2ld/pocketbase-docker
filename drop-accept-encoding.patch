@@ -1,0 +1,13 @@
+diff --git a/pocketbase/tools/filesystem/filesystem.go b/pocketbase/tools/filesystem/filesystem.go
+index 55fbdc0d..657b22b1 100644
+--- a/pocketbase/tools/filesystem/filesystem.go
++++ b/pocketbase/tools/filesystem/filesystem.go
+@@ -70,7 +70,7 @@ func NewS3(
+ 		// Google Cloud Storage alters the Accept-Encoding header,
+ 		// which breaks the v2 request signature
+ 		// (https://github.com/aws/aws-sdk-go-v2/issues/1816)
+-		if strings.Contains(endpoint, "storage.googleapis.com") {
++		if true {
+ 			ignoreSigningHeaders(o, gcpIgnoreHeaders)
+ 		}
+ 	})
