@@ -1,0 +1,26 @@
+diff --git a/tools/filesystem/internal/s3blob/s3/s3.go b/tools/filesystem/internal/s3blob/s3/s3.go
+index 3a60b358..6638cf92 100644
+--- a/tools/filesystem/internal/s3blob/s3/s3.go
++++ b/tools/filesystem/internal/s3blob/s3/s3.go
+@@ -73,6 +73,12 @@ func (s3 *S3) URL(path string) string {
+ 	}
+ 
+ 	path = strings.TrimLeft(path, "/")
++	i := strings.Index(path, "?")
++	if i < 0 {
++		path = escapePath(path)
++	} else {
++		path = escapePath(path[:i]) + path[i:]
++	}
+ 
+ 	if s3.UsePathStyle {
+ 		return fmt.Sprintf("%s://%s/%s/%s", scheme, endpoint, s3.Bucket, path)
+@@ -151,7 +157,7 @@ func (s3 *S3) sign(req *http.Request) {
+ 
+ 	canonicalParts := []string{
+ 		req.Method,
+-		escapePath(req.URL.Path),
++		req.URL.EscapedPath(),
+ 		escapeQuery(req.URL.Query()),
+ 		canonicalHeaders,
+ 		signedHeaders,
